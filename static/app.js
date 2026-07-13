@@ -241,7 +241,9 @@ if (chatForm) {
 
         try {
             // Post payload to FastAPI endpoint
-            const response = await fetch('/api/chat', {
+            // Fallback to local server if running index.html from resource files
+            const apiBase = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : '';
+            const response = await fetch(`${apiBase}/api/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
