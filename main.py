@@ -6,8 +6,10 @@ from pydantic import BaseModel
 from typing import List
 from dotenv import load_dotenv
 from groq import Groq
-# Load environment variables
-load_dotenv()
+# Load environment variables relative to the application's root directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+dotenv_path = os.path.join(BASE_DIR, ".env")
+load_dotenv(dotenv_path)
 # Initialize the Groq client lazily
 client = None
 api_key = os.getenv("GROQ_API_KEY")
@@ -15,8 +17,19 @@ if api_key:
     client = Groq(api_key=api_key)
 
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Initialize FastAPI app
 app = FastAPI(title="Groq AI Chatbot API")
+
+# Add CORS Middleware to support direct file:// access or cross-origin requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Mount standard static files directory
 # Note: This will serve files from the "static" subdirectory
